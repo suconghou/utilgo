@@ -11,13 +11,26 @@ import (
 )
 
 //Bar progress
-func Bar(vl int, width int) string {
-	var loaded = vl / (100 / width)
-	var remain = width - loaded
+func Bar(loaded int, width int) string {
+	if loaded > 100 {
+		loaded = 100
+	}
+	loaded = int(float32(loaded) / 100 * float32(width))
+	remain := width - loaded
 	if remain < 0 {
 		remain = 0
 	}
 	return fmt.Sprintf("%s %s", strings.Repeat("█", loaded), strings.Repeat(" ", remain))
+}
+
+//ProgressBar draw in cli
+func ProgressBar(before string, after string) func(received int64, readed int64, total int64, duration float64, start int64, end int64) {
+	return func(received int64, readed int64, total int64, duration float64, start int64, end int64) {
+		loaded := float64(start+received) / float64(end) * 100
+		speed := float64(received) / 1024 / duration
+		remain := float64(total-received) / 1024 / speed
+		fmt.Printf("\r%s%s%.1f%% %s/%s %.2fKB/s %.1f %.1f%s  ", before, Bar(int(loaded), 25), loaded, ByteFormat(uint64(start+readed)), ByteFormat(uint64(start+received)), speed, duration, remain, after)
+	}
 }
 
 //BoolString quick
