@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+	"time"
 )
 
 //Bar progress
@@ -59,6 +60,22 @@ func ByteFormat(bytes uint64) string {
 		return fmt.Sprintf("%.2f%s", float64(bytes)/math.Pow(1024, math.Floor(e)), unit[int(e)])
 	}
 	return fmt.Sprintf("%d%s", bytes, unit[0])
+}
+
+// StringPadding padding str to given len
+func StringPadding(str string, le int) string {
+	l := le - len(str)
+	if l > 0 {
+		for i := 0; i < l; i++ {
+			str = str + " "
+		}
+	}
+	return str
+}
+
+// DateFormat form given date
+func DateFormat(times int64) string {
+	return time.Unix(times, 0).Format("2006/01/02 15:04:05")
 }
 
 //GetStorePath give the save path from the url or the file path
