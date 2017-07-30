@@ -40,7 +40,7 @@ func ProgressBar(before string, after string, hook func(loaded float64, speed fl
 		if writer == nil {
 			writer = os.Stdout
 		}
-		fmt.Fprintf(writer, "\r%s%s%.1f%% %s/%s/%s %.2fKB/s %.1f %.1f%s", before, Bar(int(loaded), 25), loaded, ByteFormat(uint64(start+readed)), ByteFormat(uint64(start+received)), ByteFormat(uint64(total)), speed, duration, remain, after)
+		fmt.Fprintf(writer, "\r\033[2K\r%s%s%.1f%% %s/%s/%s %.2fKB/s %.1f %.1f%s", before, Bar(int(loaded), 25), loaded, ByteFormat(uint64(start+readed)), ByteFormat(uint64(start+received)), ByteFormat(uint64(total)), speed, duration, remain, after)
 	}
 }
 
