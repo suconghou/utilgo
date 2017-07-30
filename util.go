@@ -94,13 +94,11 @@ func GetStorePath(urlStr string) (string, error) {
 		if fileName == "" {
 			fileName = strings.Trim(u.RawQuery, " /.")
 		}
-		if fileName == "" {
-			fileName = "index"
-		}
 	} else {
-		if filepath.IsAbs(fileName) {
-			return fileName, nil
-		}
+		fileName = filepath.Base(fileName)
+	}
+	if fileName == "" {
+		fileName = "index"
 	}
 	return filepath.Join(dir, fileName), nil
 }
