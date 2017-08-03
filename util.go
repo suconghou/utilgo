@@ -1,7 +1,11 @@
 package utilgo
 
 import (
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"math"
 	"net/url"
@@ -103,6 +107,19 @@ func GetStorePath(urlStr string) (string, error) {
 	return filepath.Join(dir, fileName), nil
 }
 
+// GetOpenFile just open file for read
+func GetOpenFile(file string) (*os.File, error) {
+	var fullpath = file
+	if !filepath.IsAbs(fullpath) {
+		dir, err := os.Getwd()
+		if err != nil {
+			return nil, err
+		}
+		fullpath = filepath.Join(dir, file)
+	}
+	return os.Open(fullpath)
+}
+
 //GetContinue create file or give file size and hanle
 func GetContinue(fullpath string) (*os.File, int64, error) {
 	if stat, err := os.Stat(fullpath); os.IsNotExist(err) {
@@ -163,4 +180,57 @@ func CallPlayer(file string) {
 		player = "mpv"
 	}
 	exec.Command(player, file).Start()
+}
+
+// PathMustHave return absolute path which must be a dir
+func PathMustHave(p string) (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return p, err
+	}
+	if !filepath.IsAbs(p) {
+		p = filepath.Join(pwd, p)
+	}
+	stat, err := os.Stat(p)
+	if err != nil {
+		return p, err
+	}
+	if !stat.Mode().IsDir() {
+		return p, fmt.Errorf("%s is not directory", p)
+	}
+	return p, err
+}
+
+// GetFileHash return md5sum sha1sum ...
+func GetFileHash(file *os.File, t string) ([]byte, error) {
+	switch t {
+	case "md5":
+		h := md5.New()
+		_, err := io.Copy(h, file)
+		if err != nil {
+			return nil, err
+		}
+		return h.Sum(nil), nil
+	case "sha1":
+		h := sha1.New()
+		_, err := io.Copy(h, file)
+		if err != nil {
+			return nil, err
+		}
+		return h.Sum(nil), nil
+	case "sha256":
+		h := sha256.New()
+		_, err := io.Copy(h, file)
+		if err != nil {
+			return nil, err
+		}
+		return h.Sum(nil), nil
+	default:
+		h := crc32.NewIEEE()
+		_, err := io.Copy(h, file)
+		if err != nil {
+			return nil, err
+		}
+		return h.Sum(nil), nil
+	}
 }
