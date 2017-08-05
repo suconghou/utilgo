@@ -8,6 +8,7 @@ import (
 	"hash/crc32"
 	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
@@ -233,4 +234,31 @@ func GetFileHash(file *os.File, t string) ([]byte, error) {
 		}
 		return h.Sum(nil), nil
 	}
+}
+
+// JSONPut resp json
+func JSONPut(w http.ResponseWriter, bs []byte, cors bool, cacheTime int) (int, error) {
+	h := w.Header()
+	h.Set("Content-Type", "text/json; charset=utf-8")
+	if cors {
+		CrossShare(h)
+	}
+	if cacheTime > 1 {
+		UseHTTPCache(h, cacheTime)
+	}
+	return w.Write(bs)
+}
+
+// UseHTTPCache set header
+func UseHTTPCache(h http.Header, cacheTime int) {
+	h.Set("Expires", time.Now().Add(time.Second*time.Duration(cacheTime)).Format(http.TimeFormat))
+	h.Set("Cache-Control", fmt.Sprintf("public, max-age=%d", cacheTime))
+}
+
+// CrossShare set header
+func CrossShare(h http.Header) {
+	h.Set("Access-Control-Max-Age", "86400")
+	h.Set("Access-Control-Allow-Origin", "*")
+	h.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS")
+	h.Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Content-Length, Accept, Accept-Encoding, Cache-Control, Expires")
 }
