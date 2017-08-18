@@ -145,7 +145,7 @@ func InArray(val string, array []string) (ok bool, i int) {
 
 // IsURL if the given string is an url
 func IsURL(url string) bool {
-	return regexp.MustCompile(`^[a-zA-z]+://[^\s]*$`).MatchString(url)
+	return regexp.MustCompile(`^[a-zA-z]+://[^\s]+$`).MatchString(url)
 }
 
 // HasFlag return if has given param
