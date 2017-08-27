@@ -241,7 +241,7 @@ func JSONPut(w http.ResponseWriter, bs []byte, cors bool, cacheTime int) (int, e
 	h := w.Header()
 	h.Set("Content-Type", "text/json; charset=utf-8")
 	if cors {
-		CrossShare(h)
+		CrossShare(h, nil, "")
 	}
 	if cacheTime > 1 {
 		UseHTTPCache(h, cacheTime)
@@ -256,9 +256,22 @@ func UseHTTPCache(h http.Header, cacheTime int) {
 }
 
 // CrossShare set header
-func CrossShare(h http.Header) {
-	h.Set("Access-Control-Max-Age", "86400")
-	h.Set("Access-Control-Allow-Origin", "*")
+func CrossShare(h http.Header, r http.Header, header string) {
+	var origin string
+	if r != nil {
+		origin = r.Get("Origin")
+	}
+	if origin == "" {
+		h.Set("Access-Control-Allow-Origin", "*")
+	} else {
+		h.Set("Access-Control-Allow-Origin", origin)
+		h.Set("Access-Control-Allow-Credentials", "true")
+	}
+	h.Set("Access-Control-Max-Age", "604800")
 	h.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS")
-	h.Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Content-Length, Accept, Accept-Encoding, Cache-Control, Expires")
+	if header == "" {
+		h.Set("Access-Control-Allow-Headers", "Range, Origin, X-Requested-With, Content-Type, Content-Length, Accept, Accept-Encoding, Cache-Control, Expires")
+	} else {
+		h.Set("Access-Control-Allow-Headers", header)
+	}
 }
