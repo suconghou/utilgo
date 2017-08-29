@@ -204,31 +204,35 @@ func PathMustHave(p string) (string, error) {
 
 // GetFileHash return md5sum sha1sum ...
 func GetFileHash(file *os.File, t string) ([]byte, error) {
+	_, err := file.Seek(0, 0)
+	if err != nil {
+		return nil, err
+	}
 	switch t {
 	case "md5":
 		h := md5.New()
-		_, err := io.Copy(h, file)
+		_, err = io.Copy(h, file)
 		if err != nil {
 			return nil, err
 		}
 		return h.Sum(nil), nil
 	case "sha1":
 		h := sha1.New()
-		_, err := io.Copy(h, file)
+		_, err = io.Copy(h, file)
 		if err != nil {
 			return nil, err
 		}
 		return h.Sum(nil), nil
 	case "sha256":
 		h := sha256.New()
-		_, err := io.Copy(h, file)
+		_, err = io.Copy(h, file)
 		if err != nil {
 			return nil, err
 		}
 		return h.Sum(nil), nil
 	default:
 		h := crc32.NewIEEE()
-		_, err := io.Copy(h, file)
+		_, err = io.Copy(h, file)
 		if err != nil {
 			return nil, err
 		}
