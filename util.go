@@ -83,6 +83,14 @@ func DateFormat(times int64) string {
 	return time.Unix(times, 0).Format("2006/01/02 15:04:05")
 }
 
+// HasFileSize return current file size or 0 if not exist
+func HasFileSize(fullpath string) int64 {
+	if stat, err := os.Stat(fullpath); err == nil {
+		return stat.Size()
+	}
+	return 0
+}
+
 //GetStorePath give the save path from the url or the file path
 func GetStorePath(urlStr string) (string, error) {
 	var fileName = urlStr
