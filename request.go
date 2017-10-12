@@ -43,21 +43,6 @@ func PostContent(url string, contentType string, body io.Reader, callback func(r
 	return callback(resp)
 }
 
-// PostContentWait send post request and wait one second then read response
-func PostContentWait(url string, contentType string, body io.Reader) ([]byte, error) {
-	resp, err := http.Post(url, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	time.Sleep(time.Second)
-	bodyStr, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return bodyStr, err
-	}
-	return bodyStr, nil
-}
-
 // Dohttp do a http request and return http response
 func Dohttp(url string, method string, reqHeader http.Header, body io.Reader, timeout uint, transport *http.Transport) (*http.Response, error) {
 	client := NewClient(timeout, transport)
