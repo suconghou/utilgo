@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-// GetResp return http response
-func GetResp(url string) (*http.Response, error) {
-	return http.Get(url)
+// GetResp return http response repleace for http.Get
+func GetResp(url string, timeout uint) (*http.Response, error) {
+	return Dohttp(url, "GET", nil, nil, timeout, nil)
 }
 
 // GetContent send get request and read response
-func GetContent(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+func GetContent(url string, timeout uint) ([]byte, error) {
+	resp, err := GetResp(url, timeout)
 	if err != nil {
 		return nil, err
 	}
@@ -27,17 +27,20 @@ func GetContent(url string) ([]byte, error) {
 }
 
 // PostContent send post request and read response
-func PostContent(url string, contentType string, body io.Reader) ([]byte, error) {
+func PostContent(url string, contentType string, body io.Reader, callback func(resp *http.Response) ([]byte, error)) ([]byte, error) {
 	resp, err := http.Post(url, contentType, body)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyStr, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return bodyStr, err
+	if callback == nil {
+		defer resp.Body.Close()
+		bodyStr, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return bodyStr, err
+		}
+		return bodyStr, nil
 	}
-	return bodyStr, nil
+	return callback(resp)
 }
 
 // PostContentWait send post request and wait one second then read response
