@@ -34,10 +34,21 @@ func Bar(loaded int, width int) string {
 }
 
 //ProgressBar draw in cli
-func ProgressBar(before string, after string, hook func(loaded float64, speed float64, remain float64), writer io.Writer) func(received int64, readed int64, total int64, duration float64, start int64, end int64) {
-	return func(received int64, readed int64, total int64, duration float64, start int64, end int64) {
+func ProgressBar(before string, after string, hook func(loaded float64, speed float64, remain float64), writer io.Writer) func(received int64, readed int64, total int64, start int64, end int64) {
+	var (
+		startTime    = time.Now()
+		lastTime     = startTime
+		lastReceived int64
+	)
+	return func(received int64, readed int64, total int64, start int64, end int64) {
+		tickerDuration := time.Since(lastTime).Seconds()
+		if tickerDuration < 1 && received < total {
+			return
+		}
+		duration := time.Since(startTime).Seconds()
 		loaded := float64(start+received) / float64(end) * 100
 		speed := float64(received) / 1024 / duration
+		currspeed := float64(received-lastReceived) / 1024 / tickerDuration
 		remain := float64(total-received) / 1024 / speed
 		if hook != nil {
 			hook(float64(start+readed)/float64(end)*100, speed, remain)
@@ -45,7 +56,9 @@ func ProgressBar(before string, after string, hook func(loaded float64, speed fl
 		if writer == nil {
 			writer = os.Stdout
 		}
-		fmt.Fprintf(writer, "\r\033[2K\r%s%s%.1f%% %s/%s/%s %.2fKB/s %.1f %.1f%s", before, Bar(int(loaded), 25), loaded, ByteFormat(uint64(start+readed)), ByteFormat(uint64(start+received)), ByteFormat(uint64(total)), speed, duration, remain, after)
+		fmt.Fprintf(writer, "\r\033[2K\r%s%s%.1f%% %s/%s/%s %.2fKB/s %.2fKB/s %.1f %.1f%s", before, Bar(int(loaded), 25), loaded, ByteFormat(uint64(start+readed)), ByteFormat(uint64(start+received)), ByteFormat(uint64(total)), speed, currspeed, duration, remain, after)
+		lastReceived = received
+		lastTime = time.Now()
 	}
 }
 
