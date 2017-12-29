@@ -8,6 +8,7 @@ import (
 	"hash/crc32"
 	"io"
 	"math"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -259,6 +260,24 @@ func GetFileHash(file *os.File, t string) ([]byte, error) {
 		}
 		return h.Sum(nil), nil
 	}
+}
+
+// GetCurIpv4 return first ipv4 address found
+func GetCurIpv4() (*net.IPNet, error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return nil, err
+	}
+	ip := &net.IPNet{}
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				ip = ipnet
+				break
+			}
+		}
+	}
+	return ip, nil
 }
 
 // JSONPut resp json
