@@ -15,8 +15,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -167,7 +167,30 @@ func InArray(val string, array []string) (ok bool, i int) {
 
 // IsURL if the given string is an url
 func IsURL(url string) bool {
-	return regexp.MustCompile(`^[a-zA-z]+://[^\s]+$`).MatchString(url)
+	return urlReg.MatchString(url)
+}
+
+// IsInt check if int
+func IsInt(v string) bool {
+	if _, err := strconv.ParseInt(v, 10, 64); err == nil {
+		return true
+	}
+	return false
+}
+
+// IsPort check if port
+func IsPort(v string) bool {
+	if n, err := strconv.Atoi(v); err == nil {
+		if n > 0 && n < 65535 {
+			return true
+		}
+	}
+	return false
+}
+
+// IsIPPort check if ip:port string
+func IsIPPort(v string) bool {
+	return ipPortReg.MatchString(v)
 }
 
 // HasFlag return if has given param
