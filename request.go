@@ -19,11 +19,7 @@ func GetContent(url string, timeout uint) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return body, err
-	}
-	return body, nil
+	return ioutil.ReadAll(resp.Body)
 }
 
 // PostContent send post request and read response
