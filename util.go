@@ -112,7 +112,7 @@ func GetStorePath(urlStr string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if IsURL(urlStr) {
+	if IsURL(urlStr, true) {
 		u, err := url.Parse(urlStr)
 		if err != nil {
 			return "", err
@@ -166,7 +166,10 @@ func InArray(val string, array []string) (ok bool, i int) {
 }
 
 // IsURL if the given string is an url
-func IsURL(url string) bool {
+func IsURL(url string, strict bool) bool {
+	if strict {
+		return urlStrictReg.MatchString(url)
+	}
 	return urlReg.MatchString(url)
 }
 
