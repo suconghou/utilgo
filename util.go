@@ -339,8 +339,9 @@ func CrossShare(h http.Header, r http.Header, header string) {
 	}
 	h.Set("Access-Control-Max-Age", "604800")
 	h.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, PATCH, OPTIONS")
+	h.Set("Access-Control-Expose-Headers", "Content-Length,Accept-Ranges")
 	if header == "" {
-		h.Set("Access-Control-Allow-Headers", "Range, Origin, X-Requested-With, Content-Type, Content-Length, Accept, Accept-Encoding, Cache-Control, Expires")
+		h.Set("Access-Control-Allow-Headers", "Range, Origin, X-Requested-With, Content-Type, Content-Length, Accept, Accept-Encoding, Cache-Control, Expires, Pragma")
 	} else {
 		h.Set("Access-Control-Allow-Headers", header)
 	}
