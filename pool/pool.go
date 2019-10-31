@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// GoPool for fo thread
+// GoPool for go thread
 type GoPool struct {
 	runing int32
 	max    int32

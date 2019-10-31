@@ -197,8 +197,8 @@ func IsIPPort(v string) bool {
 }
 
 // HasFlag return if has given param
-func HasFlag(flag string) bool {
-	for _, item := range os.Args {
+func HasFlag(args []string, flag string) bool {
+	for _, item := range args {
 		if item == flag {
 			return true
 		}
@@ -207,9 +207,9 @@ func HasFlag(flag string) bool {
 }
 
 // GetParam return key value
-func GetParam(key string) (string, error) {
+func GetParam(args []string, key string) (string, error) {
 	var catched = false
-	for _, item := range os.Args {
+	for _, item := range args {
 		if catched {
 			return item, nil
 		}
