@@ -9,7 +9,7 @@ import (
 
 // GetResp return http response repleace for http.Get
 func GetResp(url string, timeout uint) (*http.Response, error) {
-	return Dohttp(url, "GET", nil, nil, timeout, nil)
+	return Dohttp(url, http.MethodGet, nil, nil, timeout, nil)
 }
 
 // GetContent send get request and read response
