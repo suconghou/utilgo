@@ -309,7 +309,7 @@ func GetCurIpv4() (*net.IPNet, error) {
 // JSONPut resp json
 func JSONPut(w http.ResponseWriter, bs []byte, cors bool, cacheTime int) (int, error) {
 	h := w.Header()
-	h.Set("Content-Type", "text/json; charset=utf-8")
+	h.Set("Content-Type", "application/json; charset=utf-8")
 	if cors {
 		CrossShare(h, nil, "")
 	}
