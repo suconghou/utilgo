@@ -2,7 +2,6 @@ package utilgo
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -19,7 +18,7 @@ func GetContent(url string, timeout uint) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 // PostContent send post request and read response
@@ -30,7 +29,7 @@ func PostContent(url string, contentType string, body io.Reader, callback func(r
 	}
 	if callback == nil {
 		defer resp.Body.Close()
-		bodyStr, err := ioutil.ReadAll(resp.Body)
+		bodyStr, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return bodyStr, err
 		}
